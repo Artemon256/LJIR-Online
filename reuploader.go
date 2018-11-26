@@ -117,6 +117,7 @@ func loadTask(filename string) task {
 	if err != nil {
 		log.Printf("Failed to load task %s", filename)
 		log.Print(err)
+		os.Remove(filename)
 		return task{}
 	}
 	var result task
@@ -124,6 +125,7 @@ func loadTask(filename string) task {
 	if err != nil {
 		log.Printf("Failed to parse task %s", filename)
 		log.Print(err)
+		os.Remove(filename)
 		return task{}
 	}
 	result.Filename = filename
@@ -203,18 +205,28 @@ func processPost(post ljapi.LJPost, rules []string) (ljapi.LJPost, error) {
 }
 
 func backupPost(link string, post ljapi.LJPost) error {
+	_, filename := path.Split(link)
+
+	f, err := os.Create("report/" + filename + ".txt")
+	defer f.Close()	
+	if err != nil {
+		return err
+	}
+	fmt.Fprint(f, post.Header, "\n\n\n", post.Content)
+	f.Close()
+
 	post.Content = url.PathEscape(post.Content)
 	post.Header = url.PathEscape(post.Header)
+
 	buf, err := json.Marshal(post)
 	if err != nil {
 		return err
 	}
-	_, filename := path.Split(link)
-	f, err := os.Create("report/" + filename + ".json")
+
+	f, err = os.Create("report/" + filename + ".json")
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 	fmt.Fprint(f, string(buf))
 	return nil
 }
