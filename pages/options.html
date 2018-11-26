@@ -1,0 +1,47 @@
+﻿<html>
+	<head>
+		<title>LJIR Online</title>
+		<link rel="stylesheet" href="style.css">
+		<script>
+			function toggleButton() {
+				let agreement = document.getElementById("agreement");
+				agreement.disabled = !agreement.disabled;
+			}
+		</script>
+	</head>
+	<body>
+		<p class="frame">
+			<h1>LJIR Online</h1>
+			<br><br>
+			<form action = "/reupload" method = "POST">
+			Пришло время магии перезалива. В левое поле суйте ссылки на обрабатываемые посты, разделяя их переносами строки. В правое поле суйте <a href="rules" target="_blank">правила обработки</a> картинок.
+			<br><br>
+			<input type = "hidden" name = "user" value = "%s">
+			<input type = "hidden" name = "password" value = "%s">
+			<input type = "hidden" name = "email" value = "%s">
+			<textarea class = "code" required type = "comment" name = "links" cols = 50 rows = 10></textarea>
+			<textarea class = "code" required type = "comment" name = "rules" cols = 50 rows = 10>
+INCLUDE *
+EXCLUDE i.imgur.com
+MORETHAN 4096</textarea>
+			<br><br>
+			Волнуетесь? Я тоже. Эта фигня не оттестирована, я не гарантирую, что она не удалит ваш блог КЕМ. 
+			<br>
+			Но на всякий случай, она будет делать бэкап каждого указанного поста, который будет отправлен вам на %s
+			<br><br>
+			Убедитесь в правильности адреса электронной почты.
+			<br><br>
+			РАЗРАБОТЧИК НИКАКОЙ ОТВЕТСТВЕННОСТИ ЗА СОХРАННОСТЬ ВАШЕГО БЛОГА <b>НЕ НЕСЁТ</b>
+			<br><br>
+			<input type = "checkbox" onclick="toggleButton()">Я согласен со всем вышеперечисленным.
+			<br><br>
+			<input type = "submit" value="Поехали" id="agreement">
+		</p>
+		<p class = "footer">
+			Разработчик - бедный <strike>студент</strike> школьник, ему нужны деньги на ардуинки и прочие электронные модули. Если не жалко - прошу кинуть донат на карту monobank - 5375414105767932
+		</p>
+		<script>
+			document.getElementById("agreement").disabled = true;
+		</script>
+	</body>
+</html>

@@ -1,0 +1,86 @@
+package imgurapi
+
+import (
+	"errors"
+	"net/http"
+	"mime/multipart"
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"encoding/json"
+	"strconv"
+)
+
+type ImgurClient struct {
+	Locked bool
+	ResetTime int
+	ClientID, ClientSecret string
+}
+
+func (ic *ImgurClient) UploadImage(image_url string) (string, error) {	
+	const UPLOAD_URL = "https://imgur-apiv3.p.mashape.com/3/image"
+	const MASHAPE_KEY = "q8V10nrtXhmshcy8Qht4nlYMjYZup1cYhDvjsnzPobTVVfvIDX"
+	
+	var buf bytes.Buffer
+	mpart := multipart.NewWriter(&buf)
+
+	field, _ := mpart.CreateFormField("image")
+	field.Write([]byte(image_url))
+	field, _ = mpart.CreateFormField("type")
+	field.Write([]byte("URL"))
+	
+	mpart.Close()
+	
+	req, _ := http.NewRequest("POST", UPLOAD_URL, &buf)
+	
+	req.Header.Add("Authorization", fmt.Sprintf("Client-ID %s", ic.ClientID))
+	req.Header.Add("Content-Type", mpart.FormDataContentType())
+	req.Header.Add("X-Mashape-Key", MASHAPE_KEY)
+	
+	http_client := http.Client{}	
+	rsp, err := http_client.Do(req)	
+	if err != nil {
+		return "", err
+	}
+	defer rsp.Body.Close()
+	
+	ic.ResetTime, _ = strconv.Atoi(rsp.Header.Get("X-Post-Rate-Limit-Reset"))
+
+	body_bytes, _ := ioutil.ReadAll(rsp.Body)
+	
+	var json_root, json_data map[string]*json.RawMessage
+	var success bool = false
+	var link string = ""
+	
+	json.Unmarshal(body_bytes, &json_root)
+
+	if (json_root["success"] == nil) || (json_root["data"] == nil) {
+		return "", errors.New(string(body_bytes))
+	}
+
+	json.Unmarshal(*json_root["success"], &success)
+	json.Unmarshal(*json_root["data"], &json_data)
+	
+	if json_data["error"] != nil {
+		var json_error map[string]*json.RawMessage
+		json.Unmarshal(*json_data["error"], &json_error)
+		var errcode int
+		json.Unmarshal(*json_error["code"], &errcode)
+		if errcode == 429 {
+			ic.Locked = true
+			return "", errors.New("Uploading too fast")
+		}
+	}
+
+	if json_data["link"] == nil {
+		return "", errors.New(string(body_bytes))
+	}
+
+	json.Unmarshal(*json_data["link"], &link)
+	
+	if success {
+		return link, nil
+	} else {
+		return "", errors.New(string(body_bytes))
+	}
+}

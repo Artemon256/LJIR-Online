@@ -1,0 +1,42 @@
+﻿<html>
+	<head>
+		<title>LJIR Online</title>
+		<link rel="stylesheet" href="style.css">
+		<script>
+			function toggleVisibility() {
+				let field = document.getElementById("password");
+				if (field.type == "password")
+					field.type = "text";
+				else
+					field.type = "password";
+			}
+		</script>
+	</head>
+	<body>
+		<p class = "frame">
+			<h1>LJIR Online</h1>
+			<br><br>
+			<form action = "/options" method = "POST">
+			<h2>Укажите ваш e-mail, на который мы будем присылать результаты</h2>
+			<br>
+			<input required type = "text" name = "email" size = 20>
+			<br><br>
+			<h2>Авторизация в LiveJournal</h2>
+			<br><br>
+			<h2>Логин:</h2>
+			<br>
+			<input required type = "text" name = "user" size = 20>
+			<br><br>
+			<h2>Пароль:</h2>
+			<br>
+			<input required type = "password" name = "password" id = "password" size = 20>
+			<br><br>
+			<input type = "checkbox" onclick = "toggleVisibility()">Видимый пароль
+			<br><br><br>
+			<input type = "submit" value="Далее">
+		</p>
+		<p class = "footer">
+			Разработчик - бедный <strike>студент</strike> школьник, ему нужны деньги на ардуинки и прочие электронные модули. Если не жалко - прошу кинуть донат на карту monobank - 5375414105767932
+		</p>
+	</body>
+</html>
