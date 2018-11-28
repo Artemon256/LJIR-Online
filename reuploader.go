@@ -18,7 +18,7 @@ import (
 	"errors"
 )
 
-var imgur imgurapi.ImgurClient = imgurapi.ImgurClient{Locked: false, ClientID: "PRIVATE DATA", ClientSecret: "PRIVATE DATA"}
+var imgur imgurapi.ImgurClient = imgurapi.ImgurClient{Locked: false, ClientID: "fb164e47d8d1444", ClientSecret: "cb79480026577ecfe90c5041098f3f778e49a41a"}
 
 type task struct {
 	LJ ljapi.LJClient	`json:"lj_client"`
@@ -180,6 +180,8 @@ func processPost(post ljapi.LJPost, rules []string) (ljapi.LJPost, error) {
 						time.Sleep(time.Duration(int64(imgur.ResetTime + 1) * 1000000000))
 					}
 					imgur.Locked = false
+					var retried bool = false
+					Retry:
 					new_image_url, err := imgur.UploadImage(image_url)
 					if err == nil {
 						edited_content = strings.Replace(edited_content, image_url, new_image_url, -1)
@@ -187,7 +189,17 @@ func processPost(post ljapi.LJPost, rules []string) (ljapi.LJPost, error) {
 						main_report.Add(fmt.Sprintf("%s -> %s\n", image_url, new_image_url))
 					} else {
 						log.Printf("%s : error : %s", image_url, err)
+						log.Print("Retrying ONCE")
+
 						main_report.Add(fmt.Sprintf("%s : error : %s\n", image_url, err))
+						main_report.Add("Retrying ONCE\n")
+
+						if !retried {
+							imgur.Locked = false
+							time.Sleep(5 * time.Second)
+							retried = true
+							goto Retry							
+						}
 					}
 				} else {
 					log.Printf("Skipped %s due to rules", image_url)
