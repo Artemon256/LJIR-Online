@@ -65,10 +65,15 @@ func (ic *ImgurClient) UploadImage(image_url string) (string, error) {
 		var json_error map[string]*json.RawMessage
 		json.Unmarshal(*json_data["error"], &json_error)
 		var errcode int
-		json.Unmarshal(*json_error["code"], &errcode)
-		if errcode == 429 {
+		if json_error["code"] != nil {
+			json.Unmarshal(*json_error["code"], &errcode)
+			if errcode == 429 {
+				ic.Locked = true
+				return "", errors.New("Uploading too fast")
+			}
+		} else {
 			ic.Locked = true
-			return "", errors.New("Uploading too fast")
+			return "", errors.New("Unknown error : " + string(body_bytes))
 		}
 	}
 

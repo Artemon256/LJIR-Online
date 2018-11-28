@@ -47,7 +47,7 @@ func (i *image) GetImageInfo() error {
 		return err
 	}
 	if (head.StatusCode != http.StatusOK) {
-		return errors.New("Unknown error")
+		return errors.New("Unknown error : " + head.Status)
 	}
 	i.Size, err = strconv.Atoi(head.Header.Get("Content-Length"));
 	if (err != nil) {
