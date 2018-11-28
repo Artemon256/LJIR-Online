@@ -18,7 +18,7 @@ import (
 	"errors"
 )
 
-var imgur imgurapi.ImgurClient = imgurapi.ImgurClient{Locked: false, ClientID: "fb164e47d8d1444", ClientSecret: "cb79480026577ecfe90c5041098f3f778e49a41a"}
+var imgur imgurapi.ImgurClient = imgurapi.ImgurClient{Locked: false, ClientID: "PRIVATE DATA", ClientSecret: "PRIVATE DATA"}
 
 type task struct {
 	LJ ljapi.LJClient	`json:"lj_client"`
