@@ -1,4 +1,5 @@
 all: ljir reuploader
+	mkdir logs
 	chmod 755 run.sh
 
 ljir:
