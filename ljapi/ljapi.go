@@ -58,7 +58,7 @@ func (lj *LJClient) getChallengeData() (string, string, error) {
 	return challenge, challenge_response, err
 }
 
-func (lj *LJClient) TryLogIn() (bool, error) {	
+func (lj *LJClient) TryLogIn() (bool, error) {
 	challenge, challenge_response, err := lj.getChallengeData()
 	if err != nil {
 		return false, err
@@ -92,7 +92,7 @@ func readLine(reader io.Reader) ([]byte, bool) {
 		}
 		if string(buf[0])=="\n" {
 			break
-		} 
+		}
 		res = append(res, buf[0])
 	}
 	return res, false;
@@ -106,10 +106,10 @@ func (lj *LJClient) EditPost(post LJPost) error {
 	const URL = "http://www.livejournal.com/interface/flat"
 	const TYPE = "application/x-www-form-urlencoded"
 	const CONTENT = "mode=editevent&user=%s&auth_method=challenge&auth_challenge=%s&auth_response=%s&ver=1&itemid=%s&event=%s&subject=%s&year=%s&mon=%s&day=%s&hour=%s&min=%s"
-	
-	content := fmt.Sprintf(CONTENT, lj.User, challenge, challenge_response, post.ID, url.PathEscape(post.Content), url.PathEscape(post.Header), post.Year, post.Month, post.Day, post.Hour, post.Minute)
+
+	content := fmt.Sprintf(CONTENT, lj.User, challenge, challenge_response, post.ID, url.QueryEscape(post.Content), url.QueryEscape(post.Header), post.Year, post.Month, post.Day, post.Hour, post.Minute)
 	contentReader := bytes.NewReader([]byte(content))
-	
+
 	resp, err := http.Post(URL, TYPE, contentReader)
 	defer resp.Body.Close()
 
@@ -118,7 +118,7 @@ func (lj *LJClient) EditPost(post LJPost) error {
 		fmt.Println(string(buf))
 		return errors.New(resp.Status)
 	}
-	
+
 	return err
 }
 
