@@ -54,10 +54,10 @@ func loadOptionsPage(response http.ResponseWriter, request *http.Request) {
 	user := request.Form.Get("user")
 	password := request.Form.Get("password")
 	email := request.Form.Get("email")
-	
+
 	buf := md5.Sum([]byte(password))
 	passhash := hex.EncodeToString(buf[:])
-	
+
 	lj := ljapi.LJClient{User: user, PassHash: passhash}
 	ok, err := lj.TryLogIn()
 	if err != nil {
@@ -70,7 +70,7 @@ func loadOptionsPage(response http.ResponseWriter, request *http.Request) {
 		loadPage(response, "pages/403.html")
 		return
 	}
-	
+
 	if ((user == "") || (password == "") || (email == "")) {
 		loadPage(response, "pages/400.html")
 		return
@@ -104,7 +104,7 @@ func registerReuploadQuery(response http.ResponseWriter, request *http.Request) 
 
 	var taskfile string = strconv.Itoa(int(time.Now().Unix())) + "-" + getNonce()
 	f, err := os.Create("tasks/"+taskfile)
-	defer f.Close()	
+	defer f.Close()
 	err = request.ParseForm()
 	if err != nil {
 		log.Print(err)
@@ -124,7 +124,7 @@ func registerReuploadQuery(response http.ResponseWriter, request *http.Request) 
 	query := reuploadQuery{
 		LJ: ljapi.LJClient{User: lj_user, PassHash: lj_passhash},
 		Email: email,
-		Links: links, 
+		Links: links,
 		Rules: rules,
 	}
 	js_bytes, err := json.Marshal(query)
@@ -153,10 +153,10 @@ func handler(response http.ResponseWriter, request *http.Request) {
 	var url string = request.URL.Path
 	log.Printf("Request to %s from %s", url, request.RemoteAddr)
 	switch url {
-		case "400": loadPage(response, "pages/400.html")
-		case "403": loadPage(response, "pages/403.html")
-		case "404": loadPage(response, "pages/404.html")
-		case "500": loadPage(response, "pages/500.html")
+		case "/400": loadPage(response, "pages/400.html")
+		case "/403": loadPage(response, "pages/403.html")
+		case "/404": loadPage(response, "pages/404.html")
+		case "/500": loadPage(response, "pages/500.html")
 		case "/": loadPage(response, "pages/welcome.html")
 		case "/lj_auth": loadPage(response, "pages/lj_auth.html")
 		case "/rules": loadPage(response, "pages/rules.html")
