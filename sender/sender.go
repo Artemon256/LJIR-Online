@@ -51,6 +51,6 @@ func SendReport(address, name string)`
 	if err != nil {
 		return err
 	}
-	err = email.Send("in-v3.mailjet.com:25", auth, msg)
+	err = email.Send(SMTP_SERVER + ":25", auth, msg)
 	return err
 }
