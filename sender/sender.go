@@ -9,16 +9,19 @@ import (
 	"os"
 )
 
+type SMTPSettings struct {
+	SmtpUsername	string	`json:"smtp_username"`
+	SmtpPassword	string	`json:"smtp_password"`
+	SmtpServer		string	`json:"smtp_server"`
+}
+
 func tarReport() error {
 	cmd := exec.Command("tar", "-zcf", "report.tar.gz", "report/")
 	err := cmd.Run()
 	return err
 }
 
-func SendReport(address, name string) error {
-	const SMTP_USERNAME = "PRIVATE DATA"
-	const SMTP_PASSWORD = "PRIVATE DATA"
-	const SMTP_SERVER = "PRIVATE DATA"
+func (settings *SMTPSettings) SendReport(address, name string) error {
 	const PATTERN = `Уважаемый %s,
 Спасибо за использование LJIR Online. Ваша заявка была обработана в той или иной степени, и разработчик выражает искреннюю надежду, что в той, а не иной.
 Даже если LJIR умудрился вам что-то попортить, он  ̶п̶о̶п̶р̶о̶с̶и̶т̶ ̶п̶р̶о̶щ̶е̶н̶и̶я̶ делал резервные копии постов, так что восстановить их не составит труда. Конечно, если внезапно копии не окажутся битыми, хехехе.
@@ -39,9 +42,9 @@ func SendReport(address, name string)`
 
 	auth := smtp.PlainAuth(
 		"",
-		SMTP_USERNAME,
-		SMTP_PASSWORD,
-		SMTP_SERVER,
+		settings.SmtpUsername,
+		settings.SmtpPassword,
+		settings.SmtpServer,
 	)
 
 	msg := email.NewMessage("Отчёт об обработке", text)
@@ -51,6 +54,6 @@ func SendReport(address, name string)`
 	if err != nil {
 		return err
 	}
-	err = email.Send(SMTP_SERVER + ":25", auth, msg)
+	err = email.Send(settings.SmtpServer + ":25", auth, msg)
 	return err
 }

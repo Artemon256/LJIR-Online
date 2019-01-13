@@ -1,9 +1,7 @@
-all: ljir reuploader
-	mkdir logs
-	chmod 755 run.sh
-
-ljir:
-	go build -v -x -work ljir.go
+all: reuploader site
 
 reuploader:
-	go build -v -x -work reuploader.go
+	go build reuploader.go
+
+site:
+	go build site.go
